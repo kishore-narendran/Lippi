@@ -15,7 +15,7 @@ with open(prefix + 'bookkeeping.json', 'r') as file_handle:
 for key in urls:
     file_name = prefix + key
     print 'Parsing and Indexing ', file_name
-    s = Scrape(file_name, ['li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title'])
+    s = Scrape(file_name, ['li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 'p'])
     s.parse_content()
     tags = s.get_token_tags()
     tokens = s.get_token_frequencies()
