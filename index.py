@@ -1,6 +1,8 @@
 from scrape import Scrape
 from pymongo import MongoClient
 import json
+import time
+
 
 # Creating a MongoClient and accessing the index collection
 client = MongoClient('mongodb://127.0.0.1:27017')
@@ -12,9 +14,11 @@ prefix = 'WEBPAGES_RAW/'
 with open(prefix + 'bookkeeping.json', 'r') as file_handle:
     urls = json.load(file_handle)
 
+count = 0
+start_time = time.time()
 for key in urls:
     file_name = prefix + key
-    print 'Parsing and Indexing ', file_name
+    print 'Processing ', file_name, ' ', format(count/37497.0, '.2f'), ' % done'
     s = Scrape(file_name, ['li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'title', 'p'])
     s.parse_content()
     tags = s.get_token_tags()
@@ -40,6 +44,8 @@ for key in urls:
             }
             record['documents'].append(document_info)
             index.update({'token': token}, {"$set": record}, upsert=False)
+
+print 'Time taken (seconds)\t:\t"', str((time.time() - start_time))
 
 
 # token = 'apple'
