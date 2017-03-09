@@ -45,6 +45,8 @@ for key in urls:
             record['documents'].append(document_info)
             index.update({'token': token}, {"$set": record}, upsert=False)
 
+    count += 1
+
 print 'Time taken (seconds)\t:\t"', str((time.time() - start_time))
 
 
