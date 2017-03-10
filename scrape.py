@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 from collections import defaultdict
 from nltk.corpus import stopwords
-from nltk import WordNetLemmatizer
+from nltk.stem.lancaster import LancasterStemmer
 
 
 class Scrape:
@@ -19,7 +19,7 @@ class Scrape:
         self.token_counts = defaultdict(int)
         self.token_tag = dict()
 
-        self.lemma = WordNetLemmatizer()
+        self.stemmer = LancasterStemmer()
 
     def parse_content(self):
         content = {}
@@ -61,7 +61,7 @@ class Scrape:
 
         # Finding all the alphanumeric tokens and converting them to lowercase
         line_tokens = re.findall('\w+', text)
-        line_tokens = [self.lemma.lemmatize(token.lower()) for token in line_tokens]
+        line_tokens = [self.stemmer.stem(token.lower()) for token in line_tokens]
 
         if self.remove_stop_words is True:
             line_tokens = [token for token in line_tokens if token not in stopwords.words('english')]
