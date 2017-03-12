@@ -61,9 +61,6 @@ def scrape_and_index():
 
         count += 1
 
-        if count == 100:
-            break
-
     print 'Time taken (seconds)\t:\t"', str((time.time() - start_time))
 
     index.write_to_mongo()
