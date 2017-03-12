@@ -5,7 +5,7 @@ from nltk.stem.lancaster import LancasterStemmer
 from math import log
 import json
 import operator
-import sys
+import argparse
 
 
 class Search:
@@ -55,7 +55,7 @@ class Search:
                 # temp_tfidf = log(document['count'] + 1, 10) * log(self.dcount/len(documents), 10)
                 # self.tfidf[token][1].append(temp_tfidf)
 
-    def get_results(self):
+    def get_results(self, number_of_results):
         prefix = 'WEBPAGES_RAW/'
 
         with open(prefix + 'bookkeeping.json', 'r') as file_handle:
@@ -71,16 +71,23 @@ class Search:
             print "URLS\t", urls[document[0]]
             print "Document\t", document[0]
             print 'TFIDF\t', document[1]
-            count += 1
 
-            if count == 10:
+            if count == number_of_results:
                 break
+
+            count += 1
 
 
 if __name__ == '__main__':
-    query = sys.argv[1]
-    s = Search(query)
+    parser = argparse.ArgumentParser(description='ICS UCI Search eEngine')
+    parser.add_argument('-s', '--search', required=True, help='Search query')
+    parser.add_argument('-n', '--number', required=False, help='Number of results')
+    args = parser.parse_args()
+    print args
+    s = Search(args.search, 10)
     s.get_results()
+
+
 
 
 
