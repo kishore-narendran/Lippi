@@ -46,7 +46,7 @@ class Search:
             documents = record['documents']
             # self.tfidf[token] = (list(), list())
             for document in documents:
-                file_name = document['file_name'].replace('WEBPAGES_RAW', '')
+                file_name = document['file_name'].replace('WEBPAGES_RAW/', '')
                 if file_name in self.tfidf:
                     self.tfidf[file_name] += log(document['count'] + 1, 10) * log(self.dcount/len(documents), 10)
                 else:
@@ -65,12 +65,18 @@ class Search:
         self.get_document_tfidfs()
 
         sorted_documents = sorted(self.tfidf.items(), key=operator.itemgetter(1))
-        return sorted_documents
+        count = 1
+        for document in sorted_documents:
+            print "Result\t", count
+            print "URLS\t", urls[document[0]]
+            print "Document\t", document[0]
+            print '\n\n'
+
 
 if __name__ == '__main__':
     query = sys.argv[1]
     s = Search(query)
-    print s.get_results()
+    s.get_results()
 
 
 
