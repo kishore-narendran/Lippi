@@ -70,7 +70,8 @@ class Search:
             print "Result\t", count
             print "URLS\t", urls[document[0]]
             print "Document\t", document[0]
-            print '\n\n'
+            print ''
+            count += 1
 
 
 if __name__ == '__main__':
