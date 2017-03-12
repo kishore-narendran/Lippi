@@ -70,7 +70,6 @@ class Search:
             print "Result\t", count
             print "URLS\t", urls[document[0]]
             print "Document\t", document[0]
-            print 'TFIDF\t', document[1]
 
             if count == number_of_results:
                 break
@@ -82,10 +81,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ICS UCI Search eEngine')
     parser.add_argument('-s', '--search', required=True, help='Search query')
     parser.add_argument('-n', '--number', required=False, help='Number of results')
+
     args = parser.parse_args()
-    print args
-    s = Search(args.search, 10)
-    s.get_results()
+
+    s = Search(args.search)
+    if args.number is not None:
+        s.get_results(int(args.number))
+    else:
+        s.get_results(10)
 
 
 
