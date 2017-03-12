@@ -70,8 +70,11 @@ class Search:
             print "Result\t", count
             print "URLS\t", urls[document[0]]
             print "Document\t", document[0]
-            print ''
+            print 'TFIDF\t', document[1]
             count += 1
+
+            if count == 10:
+                break
 
 
 if __name__ == '__main__':
