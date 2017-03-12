@@ -61,7 +61,8 @@ class Scrape:
 
         # Finding all the alphanumeric tokens and converting them to lowercase
         line_tokens = re.findall('\w+', text)
-        line_tokens = [self.stemmer.stem(token.lower()) for token in line_tokens]
+        line_tokens = [token.lower() for token in line_tokens]
+        # line_tokens = [self.stemmer.stem(token.lower()) for token in line_tokens]
 
         if self.remove_stop_words is True:
             line_tokens = [token for token in line_tokens if token not in stopwords.words('english')]
