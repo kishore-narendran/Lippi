@@ -53,6 +53,9 @@ class Scrape:
         if text is None:
             return
 
+        # Convert to lowercase
+        text = text.lower()
+
         # Removing hyphens and apostrophes if needed
         if self.remove_hyphen is True:
             text = text.replace('-', '')
@@ -61,11 +64,11 @@ class Scrape:
 
         # Finding all the alphanumeric tokens and converting them to lowercase
         line_tokens = re.findall('\w+', text)
-        line_tokens = [token.lower() for token in line_tokens]
         # line_tokens = [self.stemmer.stem(token.lower()) for token in line_tokens]
 
         if self.remove_stop_words is True:
-            line_tokens = [token for token in line_tokens if token not in stopwords.words('english')]
+            line_tokens = filter(lambda token: token not in stopwords.words('english'), line_tokens)
+            #line_tokens = [token for token in line_tokens if token not in stopwords.words('english')]
 
         self.update_counts(line_tokens, tag)
 

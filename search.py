@@ -67,9 +67,7 @@ class Search:
         sorted_documents = sorted(self.tfidf.items(), key=operator.itemgetter(1))
         count = 1
         for document in sorted_documents:
-            print "Result\t", count
-            print "URLS\t", urls[document[0]]
-            print "Document\t", document[0]
+            print "Result\t", count, " - ", urls[document[0]], ' (', document[0], ')'
 
             if count == number_of_results:
                 break
@@ -78,7 +76,7 @@ class Search:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='ICS UCI Search eEngine')
+    parser = argparse.ArgumentParser(description='ICS UCI Search Engine')
     parser.add_argument('-s', '--search', required=True, help='Search query')
     parser.add_argument('-n', '--number', required=False, help='Number of results')
 
