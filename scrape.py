@@ -22,18 +22,17 @@ class Scrape:
         self.stemmer = LancasterStemmer()
 
     def parse_content(self):
-        content = {}
+        content = {tag: [] for tag in self.tags}
 
         # Get a list of strings associated with each tag
-        for tag in self.tags:
-            content[tag] = []
-            for x in self.soup.find_all(tag):
-                if tag != 'p':
-                    self.tokenize(x.string, tag)
-                    content[tag].append(x.string)
-                else:
-                    self.tokenize(x.text, tag)
-                    content[tag].append(x.text)
+        for x in self.soup.find_all(self.tags):
+            tag = x.name
+            if tag != 'p':
+                self.tokenize(x.string, tag)
+                content[tag].append(x.string)
+            else:
+                self.tokenize(x.text, tag)
+                content[tag].append(x.text)
 
         return content
 
