@@ -176,7 +176,13 @@ def print_results(docs, query_tokens):
                 text_pos = text_lower.index(query_token)
                 begin_index = max(0, text_pos - 10)
                 end_index = min(text_pos + 10, len(text))
-                print ' '.join(text[begin_index:end_index]), '...'
+                text = text[begin_index:end_index]
+                for token in text:
+                    if token.lower() in query_tokens:
+                        print colored(token, 'white', attrs=['bold']),
+                    else:
+                        print token,
+                print '...'
                 break
             except IndexError:
                 pass
