@@ -8,64 +8,72 @@ import time
 client = MongoClient('mongodb://127.0.0.1:27017')
 db = client['cs221']
 terms_collection = db['terms']
-documents_collection = db['documents1']
+documents_collection = db['documents2']
 
 NUMBER_OF_DOCUMENTS = len(terms_collection.distinct('doc'))
 start_time = time.time()
 DOCUMENT_LENGTHS = {}
 for doc in documents_collection.find({}):
-    DOCUMENT_LENGTHS[doc['doc']] = doc['length']
-print "Find Document Lengths Time = ", str((time.time() - start_time))
+    DOCUMENT_LENGTHS[doc['doc']] = (doc['length1'], doc['length2'], doc['length3'])
 
 
-def find_length_of_document(doc_id):
+def find_length_of_document(doc_id, tags=None):
     # Finding the number of tokens in a document
     # return terms_collection.count({'doc': doc_id})
-    return DOCUMENT_LENGTHS[doc_id]
-
-
-def tf_normalized(term, doc_id, tf):
-    document_length = float(find_length_of_document(doc_id))
-
-    # Finding the count of terms in the given document
-    if tf is not None:
-        term_count = terms_collection.count({'term': term, 'doc': doc_id})
+    if tags is None:
+        return DOCUMENT_LENGTHS[doc_id][0] + DOCUMENT_LENGTHS[doc_id][1] + DOCUMENT_LENGTHS[doc_id][2]
+    if tags[0] == 'title':
+        return DOCUMENT_LENGTHS[doc_id][0]
+    elif tags[0] == 'p':
+        return DOCUMENT_LENGTHS[doc_id][2]
     else:
-        term_count = tf
-
-    return 0.0 if term_count is 0 else (1 + log(float(term_count) / document_length, 10))
+        return DOCUMENT_LENGTHS[doc_id][1]
 
 
-def find_document_frequency(term):
-    return len(terms_collection.distinct('doc', {'term': term}))
+def find_document_frequency(term, tags=None):
+    # Choosing the query depending on whether the tags have been mentioned or not
+    if tags is None:
+        query = {'term': term}
+    else:
+        query = {'term': term, 'tag_type': {'$in': tags}}
+
+    return len(terms_collection.distinct('doc', query))
 
 
-def idf(term):
+def idf(term, tags):
     # Finding the number of documents in which a term occurs
-    document_frequency = find_document_frequency(term)
+    document_frequency = find_document_frequency(term, tags)
 
     return 0 if document_frequency is 0 else log(NUMBER_OF_DOCUMENTS / float(document_frequency), 10)
 
 
-# def tf_idf(term, doc_id, tf):
-#     tf_score = tf_normalized(term, doc_id, tf)
-#     idf_score = idf(term)
-#     return tf_score * idf_score
+def tf_idf(term, tags=None):
 
-def tf_idf(term):
+    # Choosing the query depending on whether the tags have been mentioned or not
+    if tags is None:
+        query = [
+            {'$match': {'term': term}},
+            {
+                '$group': {
+                    '_id': "$doc",
+                    'count': {'$sum': 1}
+                }
+            }]
+    else:
+        query = [
+            {'$match': {'term': term, 'tag_type': {'$in': tags}}},
+            {
+                '$group': {
+                    '_id': "$doc",
+                    'count': {'$sum': 1}
+                }
+            }]
+
     tf_idf_counter = Counter()
-    term_counts = terms_collection.aggregate([
-        {'$match': {'term': term}},
-        {
-            '$group': {
-                '_id': "$doc",
-                'count': {'$sum': 1}
-            }
-        }
-    ])
-    idf_term = idf(term)
+    term_counts = terms_collection.aggregate(query)
+    idf_term = idf(term, tags)
     for obj in term_counts:
-        tf = 1 + log(obj['count'] / float(find_length_of_document(obj['_id'])), 10)
+        tf = 1 + log(obj['count'] / float(find_length_of_document(obj['_id'], tags)), 10)
         tf_idf_counter[obj['_id']] = tf * idf_term
 
     return tf_idf_counter
